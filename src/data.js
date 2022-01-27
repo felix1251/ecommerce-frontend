@@ -21,3 +21,21 @@ export const sliderItems = [
         bg: "fbf0f4",
     }
 ]
+
+export const Categories = [
+    {
+        id: 1,
+        img: "",
+        title: "",
+    },
+    {
+        id: 1,
+        img: "",
+        title: "",
+    },
+    {
+        id: 1,
+        img: "",
+        title: "",
+    },
+]

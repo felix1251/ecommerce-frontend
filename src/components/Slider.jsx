@@ -33,7 +33,7 @@ const Wrapper = styled.div`
     height: 100%;
     display: flex;
     transition: all 1.5s ease;
-    transform: translateX(${prop=> prop.slideIndex * -100}vw);
+    transform: translateX(${prop => prop.slideIndex * -100}vw);
 `
 const Slide = styled.div`
     width: 100vw;
@@ -47,10 +47,13 @@ const ImgContainer = styled.div`
     flex: 1;
 `
 const Image = styled.img`
+    @media screen and (max-width: 600px) {
+    display: none;
+    }
     height: 80%;
+   
 `
 const InfoContainer = styled.div`
-    flex: 1;
     padding: 50px;
 `
 const Title = styled.h1`
@@ -72,10 +75,10 @@ const Button = styled.button`
 const Slider = () => {
     const [slideIndex, setSlideIndex] = useState(0)
     const handleClick = (direction) => {
-        if(direction === "left"){
-            setSlideIndex(slideIndex > 0 ? slideIndex-1 : 2)
-        }else{
-            setSlideIndex(slideIndex < 2 ? slideIndex+1 : 0)
+        if (direction === "left") {
+            setSlideIndex(slideIndex > 0 ? slideIndex - 1 : 2)
+        } else {
+            setSlideIndex(slideIndex < 2 ? slideIndex + 1 : 0)
         }
     }
     return (
