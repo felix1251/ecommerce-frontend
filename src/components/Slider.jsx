@@ -2,12 +2,15 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from "@material-ui/icons";
 import { useState } from "react";
 import styled from "styled-components";
 import { sliderItems } from "../data";
+import { mobile } from "../responsive";
+
 const Container = styled.div`
    width:100%;
-   height: 100vh;
+   height: 75vh;
    display: flex;
    position: relative;
    overflow: hidden;
+   ${mobile({display: "none"})}
 `
 const Arrow = styled.div`
     width: 50px;
@@ -48,7 +51,7 @@ const ImgContainer = styled.div`
 `
 const Image = styled.img`
     @media screen and (max-width: 600px) {
-    display: none;
+        display: none;
     }
     height: 80%;
    

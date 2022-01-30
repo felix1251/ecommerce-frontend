@@ -18,24 +18,76 @@ export const sliderItems = [
         title: "10.10 SALE",
         img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
         desc: "DON'T COMPROMIZE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS",
-        bg: "fbf0f4",
+        bg: "f0ddff",
     }
 ]
 
-export const Categories = [
+export const categories = [
     {
         id: 1,
-        img: "",
-        title: "",
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        title: "HOME APPLIANCES",
     },
     {
-        id: 1,
-        img: "",
-        title: "",
+        id: 2,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        title: "SKIN CARE",
     },
     {
-        id: 1,
-        img: "",
-        title: "",
+        id: 3,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        title: "GADGETS",
     },
+]
+
+export const popularProducts = [
+    {
+        id: 1,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 2,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    
+    {
+        id: 3,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    
+    {
+        id: 4,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 5,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    
+    {
+        id: 6,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    
+    {
+        id: 7,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 8,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 9,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 10,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+        id: 11,
+        img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    
 ]
