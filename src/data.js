@@ -26,17 +26,20 @@ export const categories = [
     {
         id: 1,
         img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        title: "HOME APPLIANCES",
+        title: "Women",
+        cat: "women"
     },
     {
         id: 2,
         img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        title: "SKIN CARE",
+        title: "Men",
+        cat: "men"
     },
     {
         id: 3,
         img: "https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        title: "GADGETS",
+        title: "T-shirt",
+        cat: "tshirt"
     },
 ]
 

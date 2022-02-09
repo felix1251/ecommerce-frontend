@@ -13,7 +13,7 @@ const Container = styled.div`
 const Anouncement = () => {
   return (
     <Container>
-        FREE SHIPPING NATIONWIDE
+        FREE SHIPPING & COD NATIONWIDE
     </Container>
   )
 };
