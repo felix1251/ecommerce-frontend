@@ -1,8 +1,5 @@
 import styled from "styled-components";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
 import Newsletter from "../components/Newsletter";
-import Announcement from "../components/Anouncement";
 import { Add, Remove } from "@material-ui/icons";
 import { mobile } from "../responsive";
 import { Link, useLocation } from "react-router-dom";
@@ -12,7 +9,13 @@ import { addProduct } from "../redux/cartRedux";
 import { useDispatch } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import { Rating } from 'react-simple-star-rating'
+import { Rating } from "react-simple-star-rating";
+import {
+  FormControl,
+  MenuItem,
+  Select,
+} from "@material-ui/core";
+
 
 const Container = styled.div``;
 const Wrapper = styled.div`
@@ -60,23 +63,22 @@ const Filter = styled.div`
 `;
 const FilterTitle = styled.span`
   font-size: 20px;
-  font-weight: 200;
+  font-weight: 500;
   margin-right: 7px;
 `;
 const FilterColor = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
   margin: 0px 5px;
   box-shadow: 1px 1px 3px #888888;
   cursor: pointer;
 `;
-const FilterSize = styled.select`
-  margin-left: 10px;
-  padding: 5px;
+
+const FilterSizeOption = styled.h4`
+  padding: 0px 10px;
 `;
-const FilterSizeOption = styled.option``;
 const AddContainer = styled.div`
   width: 50%;
   display: flex;
@@ -101,15 +103,15 @@ const Amount = styled.span`
 `;
 const Button = styled.button`
   padding: 15px;
-  border: 1px solid black;
+  border: none;
   border-radius: 15px;
   background-color: #028a19;
   cursor: pointer;
   color: white;
   font-weight: 700;
-
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   &:hover {
-    background-color: #2ac944;
+    background-color: #05a821;
   }
   ${mobile({ display: "none" })}
 `;
@@ -130,13 +132,14 @@ const StickyFooter = styled.div`
   })}
 `;
 const ButtonSticky = styled.button`
-  padding: 15px;
+  padding: 17px 20px;
   width: 100%;
-  border: 2px solid black;
+  border: none;
   background-color: #028a19;
   cursor: pointer;
   color: white;
   font-weight: 700;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   &:hover {
     background-color: #2ac944;
   }
@@ -144,6 +147,7 @@ const ButtonSticky = styled.button`
     display: none;
   }
 `;
+
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
@@ -158,12 +162,13 @@ const Product = () => {
       try {
         const res = await publicRequest.get("/products/find/" + id);
         setProduct(res.data);
-        setColor(res.data.color[0]);
         setSize(res.data.size[0]);
+        setColor(res.data.color[0]);
       } catch (err) {}
     };
     getProduct();
   }, [id]);
+
   const handleQuantity = (type) => {
     if (type === "dec") {
       quantity > 1 && setQuantity(quantity - 1);
@@ -181,52 +186,84 @@ const Product = () => {
 
   return (
     <Container>
-      <Announcement />
-      <Navbar />
       <Wrapper>
         <ImageContainer>
           <Carousel infiniteLoop>
-            <img src={product.img} />
-            <img src={product.img} />
-            <img src={product.img} />
-            <img src={product.img} />
+            <img alt="" src={product.img} />
           </Carousel>
         </ImageContainer>
 
         <InfoContainer>
           <Title>{product.title}</Title>
-          <hr/>
-          <Rating ratingValue={75} size={28} iconsCount={5} allowHover={false}/>
-          <br/>
+          <hr />
+          <Rating ratingValue={75} size={28} iconsCount={5} readonly={true} />
+          <br />
           <Price>
             <Currency>₱</Currency> {product.price}
           </Price>
           <FilterContainer>
             <Filter>
-              <FilterTitle>{product.color?.length === 1 ? "Color" : "Select Color"}</FilterTitle>
-              {product.color?.map((c) => (
-                <FilterColor
-                  color={c}
-                  key={c}
-                  onClick={() => setColor(color)}
-                />
-              ))}
-              <br />
+              <FilterTitle>Color</FilterTitle>
+              <FormControl
+                style={{ border: "0.3px solid black", width: "60px" }}
+              >
+                <Select
+                  labelId="simple-select-label"
+                  id="select"
+                  value={color}
+                  label="Color"
+                  onChange={(e) => setColor(e.target.value)}
+                  required
+                >
+                  {product.color?.map((c) => (
+                    <MenuItem key={c} value={c}>
+                      <FilterColor color={c} key={c} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Filter>
             <Filter>
+              <FilterTitle>Size</FilterTitle>
+              <FormControl
+                style={{ border: "0.3px solid black" }}
+              >
+                <Select
+                  labelId="simple-select-label"
+                  id="select"
+                  value={size}
+                  label="Size"
+                  onChange={(e) => setSize(e.target.value)}
+                  required
+                >
+                  {product.size?.map((s) => (
+                    <MenuItem key={s} value={s}>
+                     <FilterSizeOption>{s}</FilterSizeOption>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Filter>
+            {/* <Filter>
               <FilterTitle>Size</FilterTitle>
               <FilterSize onChange={(e) => setSize(e.target.value)}>
                 {product.size?.map((s) => (
                   <FilterSizeOption key={s}>{s}</FilterSizeOption>
                 ))}
               </FilterSize>
-            </Filter>
+            </Filter> */}
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Remove onClick={() => handleQuantity("dec")} />
+              <Remove
+                style={{ cursor: "pointer" }}
+                onClick={() => handleQuantity("dec")}
+              />
               <Amount>{quantity}</Amount>
-              <Add onClick={() => handleQuantity("ins")} />
+              <Add
+                style={{ cursor: "pointer" }}
+                onClick={() => handleQuantity("ins")}
+              />
             </AmountContainer>
             <Link to="/checkout" onClick={handleClick}>
               <Button>BUY NOW - COD AVAILABLE</Button>
@@ -237,7 +274,6 @@ const Product = () => {
         </InfoContainer>
       </Wrapper>
       <Newsletter />
-      <Footer />
       <StickyFooter>
         <Link to="/checkout" onClick={handleClick}>
           <ButtonSticky>BUY NOW - COD AVAILABLE (FREE SHIPPING)</ButtonSticky>

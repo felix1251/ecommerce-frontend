@@ -1,23 +1,31 @@
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import Anouncement from "../components/Anouncement";
-import Footer from "../components/Footer";
-import {
-  Badge,
-  TextField,
-  Grid,
-  MenuItem,
-  Stepper,
-  StepLabel,
-  Step,
-} from "@material-ui/core";
+import { Badge, TextField, Grid, MenuItem } from "@material-ui/core";
 import { mobile } from "../responsive";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../redux/cartRedux";
-import { CancelOutlined } from "@material-ui/icons";
+import { AttachMoney, CancelOutlined, LocalShipping } from "@material-ui/icons";
 import { useState } from "react";
+
 // import axios from "axios";
 import { provinces, municipalities } from "psgc";
+import data from "../postal";
+import { makeStyles } from "@material-ui/core/styles";
+import { publicRequest } from "../requestMethods";
+import { useHistory } from "react-router-dom";
+
+const useStyles = makeStyles({
+  root: {
+    "& .MuiFormLabel-root": {
+      color: "#242424",
+    },
+    "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline ": {
+      border: "0.2px solid black",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline ": {
+      borderColor: "#096101fb",
+    },
+  },
+});
 
 const Container = styled.div``;
 const Wrapper = styled.div`
@@ -117,26 +125,106 @@ const Button = styled.button`
   margin-top: 15px;
   background-color: #0aa316;
   padding: 16px;
+  width: 300px;
   color: white;
+  border: none;
   font-weight: 800;
   border-radius: 10px;
   cursor: pointer;
+  &:hover {
+    background-color: #05a821;
+  }
+  ${mobile({ width: "300px" })}
 `;
 
 const Cart = () => {
+  const classes = useStyles();
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const name = "Philippines";
+  const [fName, setFName] = useState("");
+  const [lName, setLName] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [provName, setProvName] = useState("");
   const [munName, setMunName] = useState("");
   const [brgyName, setBrgyName] = useState("");
+  const [code, setCode] = useState("");
+  const [stName, setStName] = useState("");
   const prov = provinces.all().sort((a, b) => a.name.localeCompare(b.name));
   const mun = provinces.find(provName);
   const brgy = municipalities?.find(munName);
+  const [payWith, setPaywith] = useState("CASH ON DELIVERY");
+  const paymentMethod = ["CASH ON DELIVERY", "PAYPAL", "GCASH"];
+  const [error, setError] = useState("");
 
-  // console.log("prov: ", prov);
-  // console.log("mun: ", mun);
-  // console.log("brgy", brgy);
+  const history = useHistory();
+
+  const makeRequest = async () => {
+    if (cart?.products.length !== 0) {
+      if (
+        fName &&
+        lName &&
+        mobileNumber &&
+        stName &&
+        brgyName &&
+        munName &&
+        provName &&
+        code &&
+        payWith === "CASH ON DELIVERY"
+      ) {
+        try {
+          const res = await publicRequest.post("/orders", {
+            userId: fName + " " + lName,
+            mobileNo: mobileNumber,
+            products: prodArr,
+            amount: cart.total,
+            address:
+              stName +
+              ", " +
+              brgyName +
+              ", " +
+              munName +
+              " ," +
+              provName +
+              ", " +
+              code,
+            paymentType: payWith,
+          });
+          history.push("/success", { data: res.data });
+        } catch { }
+      } else {
+        if (payWith !== "CASH ON DELIVERY") {
+          setError(`${payWith} payment is not available for the meantime`);
+        } else {
+          setError("Your missing an input on your details! please check");
+        }
+
+      }
+    } else {
+      setError("Add a product to your cart first!");
+    }
+  };
+
+  const prodArr = [];
+  cart?.products.map((p) => {
+    const { _id, quantity } = p;
+    return prodArr.push({ productId: _id, quantity: quantity });
+  });
+
+  console.log(prodArr);
+
+  const postalData = data.filter(function (d) {
+    return (
+      d.municipality.toLowerCase() === munName.toLowerCase() &&
+      d.province.toLowerCase() === provName.toLowerCase()
+    );
+  });
+
+  // console.log(prodArr);
+
+  // console.log(fName, lName, mobileNumber);
+  // console.log(
+  //   stName + ", " + brgyName + ", " + munName + " ," + provName + ", " + code
+  // );
 
   const deleteCartProduct = (product) => {
     dispatch(deleteFromCart(product));
@@ -146,11 +234,13 @@ const Cart = () => {
     setProvName(event.target.value);
     setMunName("");
     setBrgyName("");
+    setCode("");
   };
 
   const handleChangeMun = (event) => {
     setMunName(event.target.value);
     setBrgyName("");
+    setCode("");
   };
 
   const handleChangeBrgy = (event) => {
@@ -159,8 +249,6 @@ const Cart = () => {
 
   return (
     <Container>
-      <Anouncement />
-      <Navbar />
       <Wrapper>
         <Title>CHECKOUT</Title>
         <Bottom>
@@ -205,44 +293,51 @@ const Cart = () => {
             </SummaryItem>
           </Summary>
           <OrderFormCont>
-            <Stepper activeStep={0} orientation="horizontal" >
-              <Step>
-                <StepLabel>Information</StepLabel>
-              </Step>
-              <Step>
-                <StepLabel>Payment Method</StepLabel>
-              </Step>
-              
-            </Stepper>
-            <Grid container spacing={1}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  fullWidth
-                  label="Country"
-                  value={name}
-                  disabled
-                />
-              </Grid>
+            <Grid
+              container
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
               <Grid item xs={12} sm={6}>
                 <TextField
+                  className={classes.root}
+                  value={fName}
                   required
                   label="First Name"
                   variant="outlined"
                   fullWidth
+                  onChange={(e) => setFName(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
+                  className={classes.root}
+                  value={lName}
                   label="Last Name"
                   variant="outlined"
                   fullWidth
+                  onChange={(e) => setLName(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  type="number"
+                  required
+                  inputProps={{ min: 4, max: 10 }}
+                  className={classes.root}
+                  value={mobileNumber && mobileNumber}
+                  label="Mobile Number (ex. 09123456789)"
+                  variant="outlined"
+                  fullWidth
+                  onChange={(e) => setMobileNumber(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   select
+                  className={classes.root}
                   label="Province"
                   variant="outlined"
                   fullWidth
@@ -260,6 +355,7 @@ const Cart = () => {
               <Grid item xs={12} sm={8}>
                 <TextField
                   select
+                  className={classes.root}
                   label="City, Municipality"
                   variant="outlined"
                   fullWidth
@@ -275,17 +371,40 @@ const Cart = () => {
                 </TextField>
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextField
-                  required
-                  label="Postal/Zip Code"
-                  variant="outlined"
-                  fullWidth
-                />
+                {postalData.length === 0 ? (
+                  <TextField
+                    className={classes.root}
+                    label="Zip/Postal Code"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                  />
+                ) : (
+                  <TextField
+                    select
+                    className={classes.root}
+                    label="Zip/Postal Code"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                  >
+                    {postalData.map((option, key) => (
+                      <MenuItem value={option.code} key={key}>
+                        {option.code}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
               </Grid>
               <Grid item xs={12}>
                 {brgy?.barangays.length === 0 ? (
                   <TextField
-                    label="Barangay, Village "
+                    className={classes.root}
+                    label="Barangay/Village "
                     variant="outlined"
                     fullWidth
                     required
@@ -295,6 +414,7 @@ const Cart = () => {
                 ) : (
                   <TextField
                     select
+                    className={classes.root}
                     required
                     label="Barangay"
                     variant="outlined"
@@ -312,19 +432,65 @@ const Cart = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Street Name, Purok, House No."
+                  className={classes.root}
+                  label="Street Name/Purok/House No."
                   variant="outlined"
+                  value={stName}
                   fullWidth
+                  onChange={(e) => setStName(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <Button>Continue to Payment Method</Button>
+              <Grid item xs={12} style={{ marginTop: "15px" }}>
+                <TextField
+                  className={classes.root}
+                  select
+                  error={payWith === "CASH ON DELIVERY" ? false : true}
+                  label={
+                    payWith === "CASH ON DELIVERY"
+                      ? "Payment Method"
+                      : "Temporary not available"
+                  }
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={payWith}
+                  onChange={(e) => setPaywith(e.target.value)}
+                >
+                  {paymentMethod.map((p) => (
+                    <MenuItem value={p} key={p}>
+                      {p === "CASH ON DELIVERY" ? (
+                        <div
+                          style={{
+                            alignContent: "center",
+                            alignItems: "center",
+                            display: "flex",
+                          }}
+                        >
+                          <LocalShipping style={{ marginRight: "10px" }} /> {p}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            alignContent: "center",
+                            alignItems: "center",
+                            display: "flex",
+                          }}
+                        >
+                          <AttachMoney style={{ marginRight: "10px" }} /> {p}
+                        </div>
+                      )}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
+              <div style={{ color: "red", marginTop: "10px", display: "flex", flexDirection: "column", alignContent: "center", alignItems: "center" }}>
+                <span>{error}</span>
+                <Button onClick={makeRequest}>ORDER NOW</Button>
+              </div>
             </Grid>
           </OrderFormCont>
         </Bottom>
       </Wrapper>
-      <Footer />
     </Container>
   );
 };

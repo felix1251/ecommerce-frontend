@@ -12,11 +12,18 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
+import ScrollToTop from "./scrollTop";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Announcement from "./components/Anouncement";
 
 const App = () => {
   const user = true;
   return (
     <Router>
+      <Announcement/>
+      <ScrollToTop/>
+      <Navbar/>
       <Switch>
         <Route exact path="/">
           <Home />
@@ -43,6 +50,7 @@ const App = () => {
           {user ? <Redirect to="/" /> : <Register />}
         </Route>
       </Switch>
+      <Footer/>
     </Router>
   );
 };

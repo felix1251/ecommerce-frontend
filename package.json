@@ -20,7 +20,9 @@
         "react-simple-star-rating": "^4.0.5",
         "styled-components": "^5.3.3",
         "web-vitals": "^1.0.1",
-        "zipcodes-ph": "^1.1.2"
+        "xlsx": "^0.18.0",
+        "zipcodes-ph": "^1.1.2",
+        "zipcodes-ph2": "^1.0.0"
     },
     "scripts": {
         "start": "react-scripts start",

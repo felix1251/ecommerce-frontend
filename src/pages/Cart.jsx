@@ -1,7 +1,4 @@
 import styled from "styled-components";
-import Navbar from "../components/Navbar";
-import Anouncement from "../components/Anouncement";
-import Footer from "../components/Footer";
 import { Add, Remove } from "@material-ui/icons";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
@@ -139,8 +136,6 @@ const Cart = () => {
   const cart = useSelector((state) => state.cart);
   return (
     <Container>
-      <Anouncement />
-      <Navbar />
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
@@ -211,7 +206,6 @@ const Cart = () => {
           </Summary>
         </Bottom>
       </Wrapper>
-      <Footer />
     </Container>
   );
 };
