@@ -192,7 +192,6 @@ const Product = () => {
             <img alt="" src={product.img} />
           </Carousel>
         </ImageContainer>
-
         <InfoContainer>
           <Title>{product.title}</Title>
           <hr />

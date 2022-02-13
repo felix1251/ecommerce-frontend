@@ -1,11 +1,13 @@
 import styled from "styled-components";
 import Products from "../components/Products";
-import NewsLetter from "../components/Newsletter";
 import { mobile } from "../responsive";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 
-const Container = styled.div``;
+const Container = styled.div`
+  margin: 20px;
+  ${mobile({ margin: "10px" })}
+`;
 const Title = styled.h1`
   margin: 20px;
 `;
@@ -45,7 +47,7 @@ const ProductList = () => {
   };
   return (
     <Container>
-      <Title>{cat}</Title>
+      <Title>{cat.toUpperCase().replace("-", " ")}</Title>
       <FilterContainer>
         <Filter>
           <FilterText>Filter:</FilterText>
@@ -76,7 +78,6 @@ const ProductList = () => {
         </Filter>
       </FilterContainer>
       <Products cat={cat} filters={filters} sort={sort} />
-      <NewsLetter />
     </Container>
   );
 };

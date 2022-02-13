@@ -5,13 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../redux/cartRedux";
 import { AttachMoney, CancelOutlined, LocalShipping } from "@material-ui/icons";
 import { useState } from "react";
-
-// import axios from "axios";
 import { provinces, municipalities } from "psgc";
 import data from "../postal";
 import { makeStyles } from "@material-ui/core/styles";
 import { publicRequest } from "../requestMethods";
 import { useHistory } from "react-router-dom";
+import { clearCart } from "../redux/cartRedux";
 
 const useStyles = makeStyles({
   root: {
@@ -22,7 +21,7 @@ const useStyles = makeStyles({
       border: "0.2px solid black",
     },
     "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline ": {
-      borderColor: "#096101fb",
+      borderColor: "#0026fff8",
     },
   },
 });
@@ -155,41 +154,22 @@ const Cart = () => {
   const [payWith, setPaywith] = useState("CASH ON DELIVERY");
   const paymentMethod = ["CASH ON DELIVERY", "PAYPAL", "GCASH"];
   const [error, setError] = useState("");
-
   const history = useHistory();
 
   const makeRequest = async () => {
     if (cart?.products.length !== 0) {
-      if (
-        fName &&
-        lName &&
-        mobileNumber &&
-        stName &&
-        brgyName &&
-        munName &&
-        provName &&
-        code &&
-        payWith === "CASH ON DELIVERY"
-      ) {
+      if (fName && lName && mobileNumber && stName && brgyName && munName && provName && code && payWith === "CASH ON DELIVERY") {
         try {
           const res = await publicRequest.post("/orders", {
             userId: fName + " " + lName,
             mobileNo: mobileNumber,
             products: prodArr,
             amount: cart.total,
-            address:
-              stName +
-              ", " +
-              brgyName +
-              ", " +
-              munName +
-              " ," +
-              provName +
-              ", " +
-              code,
+            address: stName + ", " + brgyName + ", " + munName + " ," + provName + ", " + code,
             paymentType: payWith,
           });
           history.push("/success", { data: res.data });
+          dispatch(clearCart())
         } catch { }
       } else {
         if (payWith !== "CASH ON DELIVERY") {
@@ -197,7 +177,6 @@ const Cart = () => {
         } else {
           setError("Your missing an input on your details! please check");
         }
-
       }
     } else {
       setError("Add a product to your cart first!");
@@ -210,8 +189,7 @@ const Cart = () => {
     return prodArr.push({ productId: _id, quantity: quantity });
   });
 
-  console.log(prodArr);
-
+  // console.log(prodArr);
   const postalData = data.filter(function (d) {
     return (
       d.municipality.toLowerCase() === munName.toLowerCase() &&

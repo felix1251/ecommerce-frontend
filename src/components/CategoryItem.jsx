@@ -4,15 +4,17 @@ import { mobile } from "../responsive";
 
 const Container = styled.div`
     flex: 1;
-    margin: 5px;
+    margin: 0px 5px;
     height: 70vh;
     position: relative;
+    
 `
 const Image = styled.img`
     height: 100%;
     width: 100%;
     object-fit: cover;
     ${mobile({ height: "25vh" })}
+    
 `
 const Info = styled.div`
     position: absolute;
@@ -28,12 +30,15 @@ const Info = styled.div`
 const Title = styled.h1`
     color: white;
     margin-bottom: 20px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px ;
 `
 const Button = styled.button`
     border: none;
     padding: 10px;
-    background-color: white;
-    color: gray;
+    background-color: #f1f51e;
+    color: black;
     cursor: pointer;
     font-weight: 600;
 `

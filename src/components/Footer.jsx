@@ -4,7 +4,8 @@ import { mobile } from "../responsive";
 
 const Container = styled.div`
     display: flex;
-    ${mobile({flexDirection: "column"})}
+    background-color: #fffde2;
+    ${mobile({ flexDirection: "column" })}
 `
 const Left = styled.div`
     flex: 1;
@@ -26,7 +27,7 @@ const SocialIcon = styled.div`
     height: 40px;
     border-radius: 50%;
     color: white;
-    background-color: #${props=>props.color};
+    background-color: #${props => props.color};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,7 +36,7 @@ const SocialIcon = styled.div`
 const Center = styled.div`
     flex: 1;
     padding: 20px;
-    ${mobile({display: "none"})}
+    ${mobile({ display: "none" })}
 `
 const Title = styled.h3`
     margin-bottom: 30px;
@@ -54,7 +55,7 @@ const ListItem = styled.li`
 const Right = styled.div`
     flex: 1;
     padding: 20px;
-    ${mobile({backgroundColor: "#eee"})}
+    ${mobile({ backgroundColor: "#eee" })}
 `
 const ContactItem = styled.div`
     margin-bottom: 10px;
@@ -70,7 +71,7 @@ const Footer = () => {
             <Left>
                 <Logo>FELMART PH</Logo>
                 <Desc>
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque repudiandae voluptate sequi minus maxime perferendis, sit unde, ipsam molestiae libero eligendi, nostrum voluptatum beatae eveniet neque nobis nam nesciunt non.
+                    We make sure we provide you with the best products and best customer service! Enjoy hassle free shipping Cash on Delivery Nationwide
                 </Desc>
                 <SocialContainer>
                     <SocialIcon color="385999">
@@ -104,15 +105,15 @@ const Footer = () => {
             <Right>
                 <Title>Contact</Title>
                 <ContactItem>
-                    <Room style={{marginRight: "10px"}}/>Villanueva Extension, Butuan City, Agusan Del Norte
+                    <Room style={{ marginRight: "10px" }} />Villanueva Extension, Butuan City, Agusan Del Norte
                 </ContactItem>
                 <ContactItem>
-                    <Phone style={{marginRight: "10px"}}/>+639079247641
+                    <Phone style={{ marginRight: "10px" }} />+639079247641
                 </ContactItem>
                 <ContactItem>
-                    <MailOutline style={{marginRight: "10px"}}/>femartphstore12@gmail.com
+                    <MailOutline style={{ marginRight: "10px" }} />femartphstore12@gmail.com
                 </ContactItem>
-                <Payment src="https://i.ibb.co/Qfvn4z6/payment.png"/>
+                <Payment src="https://i.ibb.co/Qfvn4z6/payment.png" />
             </Right>
         </Container>
     )

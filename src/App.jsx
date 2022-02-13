@@ -16,9 +16,10 @@ import ScrollToTop from "./scrollTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Announcement from "./components/Anouncement";
+import { useSelector } from "react-redux";
 
 const App = () => {
-  const user = true;
+  const user = useSelector(state => state.user.currentUser );
   return (
     <Router>
       <Announcement/>
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/register">
           {user ? <Redirect to="/" /> : <Register />}
         </Route>
+        <Redirect to="/" /> 
       </Switch>
       <Footer/>
     </Router>

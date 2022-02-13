@@ -1,31 +1,34 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
-import Product from "./Product";
-import { mobile } from '../responsive';
+// import styled from "styled-components";
+// import Product from "./Product";
+// import { mobile } from '../responsive';
+import { publicRequest } from "../requestMethods";
+import ProductCard from "../components/ProductCard"
+import { Grid } from "@material-ui/core";
+import ReactPaginate from 'react-paginate';
+// import { Link } from "react-router-dom";
 
-const Container = styled.div`
-  flex-wrap: wrap;
-  display: flex;
-  padding: 20px;
-  justify-content: space-between;
-  ${mobile({ padding: "10px" })}
-`;
 
 const Products = ({ cat, filters, sort }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
+  const [pageNumber, SetPageNumber] = useState(0)
+  const productPerPage = 12
+  const pagesVisited = pageNumber * productPerPage
+  const pageCount = Math.ceil(products.length / productPerPage)
+  const changePage = ({ selected }) => {
+    SetPageNumber(selected)
+  }
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const res = await axios.get(
+        const res = await publicRequest.get(
           cat
-            ? `http://localhost:5000/api/products?category=${cat}`
-            : "http://localhost:5000/api/products"
+            ? `/products?category=${cat}`
+            : "/products"
         );
         setProducts(res.data);
-      } catch (err) {}
+      } catch (err) { }
     };
     getProducts();
   }, [cat]);
@@ -41,6 +44,7 @@ const Products = ({ cat, filters, sort }) => {
       );
   }, [products, cat, filters]);
 
+  // console.log(products)
   useEffect(() => {
     if (sort === "newest") {
       setFilteredProducts((prev) =>
@@ -58,13 +62,29 @@ const Products = ({ cat, filters, sort }) => {
   }, [sort]);
 
   return (
-    <Container>
-      {cat
-        ? filteredProducts.map((item) => <Product item={item} key={item._id} />)
-        : products
+    <div style={{ margin: "30px 0px" }}>
+      <Grid container spacing={3} justifyContent="center">
+        {cat
+          ? filteredProducts.slice(pagesVisited, pagesVisited + productPerPage).map((item, key) =>
+            <ProductCard item={item} key={key} />
+          )
+          : products
             .slice(0, 8)
-            .map((item) => <Product item={item} key={item._id} />)}
-    </Container>
+            .map((item, key) => <ProductCard item={item} key={key} />)}
+      </Grid>
+      <br /><br />
+      {cat && pageCount > 1 &&
+        <ReactPaginate
+          previousLabel={"Prev"}
+          nextLabel={"Next"}
+          pageCount={pageCount}
+          onPageChange={changePage}
+          containerClassName={"paginationBttns"}
+          disabledClassName={"paginationDisabled"}
+          activeClassName={"paginationActive"}
+        />
+      }
+    </div>
   );
 };
 

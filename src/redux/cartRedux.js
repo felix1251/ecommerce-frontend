@@ -6,7 +6,6 @@ const cartSLice = createSlice({
     products: [],
     quantity: 0,
     total: 0,
-    id:0,
   },
   reducers: {
     addProduct: (state, action) => {
@@ -19,7 +18,14 @@ const cartSLice = createSlice({
       state.quantity -= 1;
       state.total -= action.payload.price * action.payload.quantity;
     },
+    clearCart: (state) => {
+      while (state.products.length) {
+        state.products.pop();
+      }
+      state.quantity = 0;
+      state.total = 0;
+    }
   },
 });
-export const {addProduct ,deleteFromCart} = cartSLice.actions
+export const {addProduct ,deleteFromCart, clearCart} = cartSLice.actions
 export default cartSLice.reducer;
