@@ -198,7 +198,7 @@ const Product = () => {
           <Rating ratingValue={75} size={28} iconsCount={5} readonly={true} />
           <br />
           <Price>
-            <Currency>₱</Currency> {product.price}
+            <Currency>₱</Currency> {product.price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
           </Price>
           <FilterContainer>
             <Filter>

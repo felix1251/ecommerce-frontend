@@ -20,7 +20,7 @@ const ImgMediaCard = ({ item }) => {
           <CardContent>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Typography gutterBottom style={{ fontSize: "24px", fontWeight: "550" }} >
-                ₱ {item.price}
+                ₱ {item.price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
               </Typography>
               <Rating ratingValue={75} size={25} iconsCount={5} readonly={true} />
             </div>

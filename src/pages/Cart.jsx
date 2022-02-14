@@ -186,19 +186,19 @@ const Cart = () => {
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>₱ {cart.total} </SummaryItemPrice>
+              <SummaryItemPrice>₱ {cart.total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")} </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
-              <SummaryItemPrice>₱ {cart.total ? 250 : 0}</SummaryItemPrice>
+              <SummaryItemPrice>₱ {cart.total ? "250.00" : 0}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Shipping Discount</SummaryItemText>
-              <SummaryItemPrice>₱ {cart.total ? -250 : 0}</SummaryItemPrice>
+              <SummaryItemPrice>₱ {cart.total ? "-250.00" : 0}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>₱ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>₱ {cart.total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}</SummaryItemPrice>
             </SummaryItem>
             <Link to="/checkout">
               <Button>CHECKOUT NOW</Button>
