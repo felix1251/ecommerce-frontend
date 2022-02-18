@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { publicRequest } from "../requestMethods";
 import { useHistory } from "react-router-dom";
 import { clearCart } from "../redux/cartRedux";
+import io from "socket.io-client"
 
 const useStyles = makeStyles({
   root: {
@@ -86,7 +87,7 @@ const Details = styled.div`
 `;
 const ProductName = styled.span`
   margin-bottom: 5px;
-  ${mobile({ fontSize: "15px"})}
+  ${mobile({ fontSize: "15px" })}
 `;
 const ProductColor = styled.div`
   width: 20px;
@@ -140,6 +141,8 @@ const Button = styled.button`
   ${mobile({ width: "300px" })}
 `;
 
+const socket = io("http://localhost:5000")
+
 const Cart = () => {
   const classes = useStyles();
   const cart = useSelector((state) => state.cart);
@@ -162,8 +165,7 @@ const Cart = () => {
   const [brgyNameError, setBrgyNameError] = useState(false);
   const [codeError, setCodeError] = useState(false);
   const [stNameError, setStNameError] = useState(false);
-
-
+  
   const prov = provinces.all().sort((a, b) => a.name.localeCompare(b.name));
   const mun = provinces.find(provName);
   const brgy = municipalities?.find(munName);
@@ -193,6 +195,7 @@ const Cart = () => {
             address: stName + ", " + brgyName + ", " + munName + " ," + provName + ", " + code,
             paymentType: payWith,
           });
+          socket.emit('sendNotification', { senderName: `${fName + " " + lName}`, recieverName: "admin" })
           history.push("/success", { data: res.data });
           dispatch(clearCart())
         } catch { }
@@ -234,7 +237,7 @@ const Cart = () => {
   const prodArr = [];
   cart?.products.map((p) => {
     const { _id, quantity, color } = p;
-    return prodArr.push({ productId: _id, quantity: quantity, color: color});
+    return prodArr.push({ productId: _id, quantity: quantity, color: color });
   });
 
   // console.log(cart)
@@ -275,7 +278,7 @@ const Cart = () => {
     setBrgyName(event.target.value);
   };
 
-  const pPrice = (price, quantity ) => {
+  const pPrice = (price, quantity) => {
     return price * quantity
   }
 
@@ -298,7 +301,7 @@ const Cart = () => {
                   <ProductDetail>
                     <Details>
                       <ProductPrice>
-                        ₱ {pPrice(product.price,product.quantity).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") }
+                        ₱ {pPrice(product.price, product.quantity).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
                       </ProductPrice>
                       <ProductName>{product.title.length >= 25 ? product.title.slice(0, 25) + "...." : product.title}</ProductName>
                       <ProductColor color={product.color} />
