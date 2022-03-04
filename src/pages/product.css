@@ -1,0 +1,39 @@
+#myDiv
+{
+  height: 100%;
+  max-width: 100%;
+  margin: 30px 0px;
+  line-height: 1.5;
+}
+#myDiv img
+{
+  max-width:  400px;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+@media only screen and (max-width: 400px) {
+    #myDiv img
+    {
+      max-width: 100%;
+      object-fit: cover;
+      max-height: 200px;
+    }
+}
+
+.carousel .thumb img {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.carousel .slide img {
+    max-height: 500px;  /* change this to whatever you want */
+    max-width: 600px;
+}
+
+@media only screen and (max-width: 400px) {
+    .carousel .slide img {
+        max-height: 320px;  /* change this to whatever you want */
+        max-width: 355px;
+    }
+}

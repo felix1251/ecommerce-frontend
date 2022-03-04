@@ -2,7 +2,7 @@ import { Redirect, useLocation } from "react-router-dom";
 
 const Success = () => {
   const location = useLocation()
-  console.log(location)
+  // console.log(location)
   return (
 
     <div style={{ flexDirection: "column", display: "flex", justifyContent: "center", alignItems: "center", margin: "20px", height: "50vh" }}>

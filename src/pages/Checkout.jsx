@@ -165,7 +165,7 @@ const Cart = () => {
   const [brgyNameError, setBrgyNameError] = useState(false);
   const [codeError, setCodeError] = useState(false);
   const [stNameError, setStNameError] = useState(false);
-  
+
   const prov = provinces.all().sort((a, b) => a.name.localeCompare(b.name));
   const mun = provinces.find(provName);
   const brgy = municipalities?.find(munName);
@@ -195,7 +195,7 @@ const Cart = () => {
             address: stName + ", " + brgyName + ", " + munName + " ," + provName + ", " + code,
             paymentType: payWith,
           });
-          socket.emit('sendNotification', { senderName: `${fName + " " + lName}`, recieverName: "admin" })
+          socket.emit('sendNotification', { data: res.data, recieverName: "admin", })
           history.push("/success", { data: res.data });
           dispatch(clearCart())
         } catch { }
@@ -236,26 +236,18 @@ const Cart = () => {
 
   const prodArr = [];
   cart?.products.map((p) => {
-    const { _id, quantity, color } = p;
-    return prodArr.push({ productId: _id, quantity: quantity, color: color });
+    const { _id, quantity, color, price } = p;
+    const priceTotal = quantity * price
+    return prodArr.push({ productId: _id, quantity: quantity, color: color, priceTotal: priceTotal});
   });
 
-  // console.log(cart)
 
-  // console.log(prodArr);
   const postalData = data.filter(function (d) {
     return (
       d.municipality.toLowerCase() === munName.toLowerCase() &&
       d.province.toLowerCase() === provName.toLowerCase()
     );
   });
-
-  // console.log(prodArr);
-
-  // console.log(fName, lName, mobileNumber);
-  // console.log(
-  //   stName + ", " + brgyName + ", " + munName + " ," + provName + ", " + code
-  // );
 
   const deleteCartProduct = (product) => {
     dispatch(deleteFromCart(product));
@@ -296,7 +288,7 @@ const Cart = () => {
                     <CancelOutlined />
                   </Delete>
                   <Badge badgeContent={product.quantity} color="primary">
-                    <Image src={product.img} />
+                    <Image src={product.img[0].imgURL} />
                   </Badge>
                   <ProductDetail>
                     <Details>

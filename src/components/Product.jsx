@@ -98,6 +98,7 @@ const PriceContainer = styled.div`
   display: flex;
 `;
 const Product = ({ item }) => {
+  console.log(item)
   return (
     <Container>
       <Circle />

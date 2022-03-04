@@ -15,6 +15,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
+import "./product.css"
 
 
 const Container = styled.div``;
@@ -29,18 +30,22 @@ const ImageContainer = styled.div`
 `;
 
 const InfoContainer = styled.div`
-  flex: 1;
-  padding: 0px 25px;
-  ${mobile({ padding: "0px" })}
+  width: 700px;
+  padding: 0px 20px;
+  ${mobile({ padding: "0px", width: "100%", flex: 1 })}
 `;
 const Title = styled.h1`
   font-weight: 500;
   margin-bottom: 10px;
   ${mobile({ fontSize: "25px", marginBottom: "5px" })}
 `;
-const Desc = styled.p`
-  margin: 20px 0px;
-`;
+// const Desc = styled.div`
+//   margin-top: 35px;
+//   width: fit-content; 
+//   /* To adjust the height as well */ 
+//   height: fit-content;
+//   line-height: 1.4;
+// `;
 const Price = styled.span`
   font-weight: 600;
   font-size: 40px;
@@ -70,7 +75,7 @@ const FilterColor = styled.div`
   width: 19px;
   height: 19px;
   border-radius: 50%;
-  background-color: ${(props) => props.color};
+  background-color:  ${(props) => props.color};
   margin: 0px 5px;
   box-shadow: 1px 1px 3px #888888;
   cursor: pointer;
@@ -118,18 +123,18 @@ const Button = styled.button`
 
 const StickyFooter = styled.div`
   ${mobile({
-    height: "80px",
-    backgroundColor: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    boxShadow:
-      "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.5)",
-  })}
+  height: "80px",
+  backgroundColor: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  position: "fixed",
+  bottom: 0,
+  left: 0,
+  width: "100%",
+  boxShadow:
+    "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.5)",
+})}
 `;
 const ButtonSticky = styled.button`
   padding: 17px 20px;
@@ -162,12 +167,13 @@ const Product = () => {
       try {
         const res = await publicRequest.get("/products/find/" + id);
         setProduct(res.data);
-        setSize(res.data.size[0]);
-        setColor(res.data.color[0]);
-      } catch (err) {}
+        setSize(res.data.size[0].input);
+        setColor(res.data.color[0].color);
+      } catch (err) { }
     };
     getProduct();
   }, [id]);
+
 
   const handleQuantity = (type) => {
     if (type === "dec") {
@@ -183,74 +189,72 @@ const Product = () => {
       addProduct({ ...product, quantity, color, size, stateId: stateId })
     );
   };
-
   return (
     <Container>
       <Wrapper>
         <ImageContainer>
-          <Carousel infiniteLoop>
-            <img alt="" src={product.img} />
+          <Carousel>
+            {product.img?.map((c, key) => (
+              <img key={key} alt="" src={c.imgURL} />
+            ))}
           </Carousel>
         </ImageContainer>
         <InfoContainer>
           <Title>{product.title}</Title>
           <hr />
-          <Rating ratingValue={75} size={28} iconsCount={5} readonly={true} />
+          <Rating ratingValue={product.rating/5 * 100} size={28} iconsCount={5} readonly={true} />
           <br />
           <Price>
             <Currency>₱</Currency> {product.price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
           </Price>
           <FilterContainer>
-            <Filter>
-              <FilterTitle>Color</FilterTitle>
-              <FormControl
-                style={{ border: "0.3px solid black", width: "60px" }}
-              >
-                <Select
-                  labelId="simple-select-label"
-                  id="select"
-                  value={color}
-                  label="Color"
-                  onChange={(e) => setColor(e.target.value)}
-                  required
+            {product.color?.length !== 0 &&
+              <Filter>
+                <FilterTitle>Color</FilterTitle>
+                <FormControl
+                  style={{ border: "0.3px solid black", width: "60px" }}
                 >
-                  {product.color?.map((c) => (
-                    <MenuItem key={c} value={c}>
-                      <FilterColor color={c} key={c} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Filter>
-            <Filter>
-              <FilterTitle>Size</FilterTitle>
-              <FormControl
-                style={{ border: "0.3px solid black" }}
-              >
-                <Select
-                  labelId="simple-select-label"
-                  id="select"
-                  value={size}
-                  label="Size"
-                  onChange={(e) => setSize(e.target.value)}
-                  required
+                  <Select
+                    labelId="simple-select-label"
+                    id="select"
+                    value={color}
+                    label="Color"
+                    onChange={(e) => setColor(e.target.value)}
+                    required
+                  >
+                    {product.color?.map((c) => (
+                      <MenuItem key={c.color} value={c.color}>
+                        <FilterColor color={c.color} key={c} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Filter>
+            }
+            {product.size?.length !== 0 &&
+              <Filter>
+                <FilterTitle>Size</FilterTitle>
+                <FormControl
+                  style={{ border: "0.3px solid black" }}
                 >
-                  {product.size?.map((s) => (
-                    <MenuItem key={s} value={s}>
-                     <FilterSizeOption>{s}</FilterSizeOption>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Filter>
-            {/* <Filter>
-              <FilterTitle>Size</FilterTitle>
-              <FilterSize onChange={(e) => setSize(e.target.value)}>
-                {product.size?.map((s) => (
-                  <FilterSizeOption key={s}>{s}</FilterSizeOption>
-                ))}
-              </FilterSize>
-            </Filter> */}
+                  <Select
+                    labelId="simple-select-label"
+                    id="select"
+                    value={size}
+                    label="Size"
+                    onChange={(e) => setSize(e.target.value)}
+                    required
+                  >
+                    {product.size?.map((s, key) => (
+                      <MenuItem key={key} value={s.input}>
+                        <FilterSizeOption>{s.input}</FilterSizeOption>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Filter>
+            }
+
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
@@ -268,8 +272,7 @@ const Product = () => {
               <Button>BUY NOW - COD AVAILABLE</Button>
             </Link>
           </AddContainer>
-          <Desc>{product.desc}</Desc>
-          {/* <div dangerouslySetInnerHTML={{__html:text}}></div> */}
+          <div id="myDiv" dangerouslySetInnerHTML={{ __html: product.desc }} />
         </InfoContainer>
       </Wrapper>
       <Newsletter />
