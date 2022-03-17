@@ -6,16 +6,20 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { publicRequest } from "../requestMethods";
 import { addProduct } from "../redux/cartRedux";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { Rating } from "react-simple-star-rating";
 import {
+  Button,
   FormControl,
   MenuItem,
   Select,
+  TextField,
 } from "@material-ui/core";
 import "./product.css"
+import { getProductReview, addReview } from "../redux/reviewRedux";
+import moment from "moment"
 
 
 const Container = styled.div``;
@@ -106,7 +110,7 @@ const Amount = styled.span`
   justify-content: center;
   margin: 0px 5px;
 `;
-const Button = styled.button`
+const Button1 = styled.button`
   padding: 15px;
   border: none;
   border-radius: 15px;
@@ -136,6 +140,7 @@ const StickyFooter = styled.div`
     "0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.5)",
 })}
 `;
+
 const ButtonSticky = styled.button`
   padding: 17px 20px;
   width: 100%;
@@ -153,6 +158,14 @@ const ButtonSticky = styled.button`
   }
 `;
 
+const ReviewContainer = styled.div`
+  padding: 0px 5px;
+`;
+
+const Review = styled.div`
+  margin-bottom: 10px;
+`;
+
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
@@ -160,20 +173,36 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
+  const [rating, setRating] = useState(0);
+  const [notify, setNotify] = useState("")
+  const [reviewInput, setReviewInput] = useState("")
+  const [name, setName] = useState("")
+  const [ratingInput, setRatingInput] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch();
+  const rev = useSelector(state => state.reviews.data)
 
   useEffect(() => {
     const getProduct = async () => {
       try {
         const res = await publicRequest.get("/products/find/" + id);
         setProduct(res.data);
-        setSize(res.data.size[0].input);
-        setColor(res.data.color[0].color);
+        setSize(res.data.size[0]);
+        setColor(res.data.color[0]);
+        dispatch(getProductReview(res.data.reviews.reverse()))
       } catch (err) { }
     };
     getProduct();
-  }, [id]);
+  }, [id, dispatch]);
 
+  useEffect(() => {
+    var total = 0
+    for (let i = 0; i < product.reviews?.length; i++) {
+      total += product.reviews[i].rating
+    }
+    setRating(total / product.reviews?.length)
+  }, [product]);
 
   const handleQuantity = (type) => {
     if (type === "dec") {
@@ -189,90 +218,175 @@ const Product = () => {
       addProduct({ ...product, quantity, color, size, stateId: stateId })
     );
   };
+
+  const addRev = async () => {
+    setLoading(true)
+    var convertRating = 0
+    convertRating = ratingInput * 5 / 100
+    const review = { name: name, rating: convertRating, comment: reviewInput }
+    if (name && convertRating !== 0 && reviewInput) {
+      try {
+        const res = await publicRequest.post("/products/review/" + product._id, review);
+        dispatch(addReview(res.data.review))
+        setNotify(res.data.message)
+        setOpen(false)
+        setLoading(false)
+      } catch (err) {
+        setLoading(false)
+        setNotify("Error sending, something is wrong")
+      }
+    } else {
+      if (ratingInput === 0) {
+        setNotify("Rating is not set")
+      }
+      else if (name === "") {
+        setNotify("Name is not set")
+      }
+      else if (reviewInput === "") {
+        setNotify("Review message is not set")
+      }
+      setLoading(false)
+    }
+  }
+
+  const handleRating = (rate) => {
+    setRatingInput(rate)
+  }
+
+  const openReview = () => {
+    setOpen(!open)
+  }
+
   return (
     <Container>
       <Wrapper>
         <ImageContainer>
           <Carousel>
             {product.img?.map((c, key) => (
-              <img key={key} alt="" src={c.imgURL} />
+              <img key={key} alt="" src={c} />
             ))}
           </Carousel>
         </ImageContainer>
         <InfoContainer>
-          <Title>{product.title}</Title>
-          <hr />
-          <Rating ratingValue={product.rating/5 * 100} size={28} iconsCount={5} readonly={true} />
-          <br />
-          <Price>
-            <Currency>₱</Currency> {product.price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
-          </Price>
-          <FilterContainer>
-            {product.color?.length !== 0 &&
-              <Filter>
-                <FilterTitle>Color</FilterTitle>
-                <FormControl
-                  style={{ border: "0.3px solid black", width: "60px" }}
-                >
-                  <Select
-                    labelId="simple-select-label"
-                    id="select"
-                    value={color}
-                    label="Color"
-                    onChange={(e) => setColor(e.target.value)}
-                    required
+          <div>
+            <Title>{product.title}</Title>
+            <hr />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Rating ratingValue={rating / 5 * 100} size={28} iconsCount={5} readonly={true} />
+              {product.reviews?.length !== 0 &&
+                <span style={{ marginLeft: "10px", fontWeight: "600", fontSize: "18px" }}> {rev.length > 1 ? `( ${rev.length} reviews)` : `( ${rev.length} review)`}</span>
+              }
+            </div>
+            <Price>
+              <Currency>₱</Currency> {product.price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")}
+            </Price>
+            <FilterContainer>
+              {product.color?.length !== 0 &&
+                <Filter>
+                  <FilterTitle>Color</FilterTitle>
+                  <FormControl
+                    style={{ border: "0.3px solid black", width: "60px" }}
                   >
-                    {product.color?.map((c) => (
-                      <MenuItem key={c.color} value={c.color}>
-                        <FilterColor color={c.color} key={c} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Filter>
-            }
-            {product.size?.length !== 0 &&
-              <Filter>
-                <FilterTitle>Size</FilterTitle>
-                <FormControl
-                  style={{ border: "0.3px solid black" }}
-                >
-                  <Select
-                    labelId="simple-select-label"
-                    id="select"
-                    value={size}
-                    label="Size"
-                    onChange={(e) => setSize(e.target.value)}
-                    required
+                    <Select
+                      labelId="simple-select-label"
+                      id="select"
+                      value={color}
+                      label="Color"
+                      onChange={(e) => setColor(e.target.value)}
+                      required
+                    >
+                      {product.color?.map((c) => (
+                        <MenuItem key={c} value={c}>
+                          <FilterColor color={c} key={c} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Filter>
+              }
+              {product.size?.length !== 0 &&
+                <Filter>
+                  <FilterTitle>Size</FilterTitle>
+                  <FormControl
+                    style={{ border: "0.3px solid black" }}
                   >
-                    {product.size?.map((s, key) => (
-                      <MenuItem key={key} value={s.input}>
-                        <FilterSizeOption>{s.input}</FilterSizeOption>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Filter>
-            }
+                    <Select
+                      labelId="simple-select-label"
+                      id="select"
+                      value={size}
+                      label="Size"
+                      onChange={(e) => setSize(e.target.value)}
+                      required
+                    >
+                      {product.size?.map((s, key) => (
+                        <MenuItem key={key} value={s}>
+                          <FilterSizeOption>{s}</FilterSizeOption>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Filter>
+              }
 
-          </FilterContainer>
-          <AddContainer>
-            <AmountContainer>
-              <Remove
-                style={{ cursor: "pointer" }}
-                onClick={() => handleQuantity("dec")}
-              />
-              <Amount>{quantity}</Amount>
-              <Add
-                style={{ cursor: "pointer" }}
-                onClick={() => handleQuantity("ins")}
-              />
-            </AmountContainer>
-            <Link to="/checkout" onClick={handleClick}>
-              <Button>BUY NOW - COD AVAILABLE</Button>
-            </Link>
-          </AddContainer>
-          <div id="myDiv" dangerouslySetInnerHTML={{ __html: product.desc }} />
+            </FilterContainer>
+            <AddContainer>
+              <AmountContainer>
+                <Remove
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleQuantity("dec")}
+                />
+                <Amount>{quantity}</Amount>
+                <Add
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleQuantity("ins")}
+                />
+              </AmountContainer>
+              <Link to="/checkout" onClick={handleClick}>
+                <Button1>BUY NOW - COD AVAILABLE</Button1>
+              </Link>
+            </AddContainer>
+            <div id="myDiv" dangerouslySetInnerHTML={{ __html: product.desc }} />
+            <hr />
+            <ReviewContainer>
+              <h2 style={{ margin: "10px 10px", textAlign: "center" }}>Reviews</h2>
+              <Button onClick={openReview} variant="contained" style={{ marginBottom: "15px" }} color={open ? "secondary" : "primary"}> {open ? "Close" : "Write a review"} </Button> {!open && notify === "Review Added" && notify}
+              {open &&
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                  <Rating size={45} iconsCount={5} onClick={handleRating} />
+                  <TextField
+                    style={{ marginBottom: "10px" }}
+                    required
+                    value={name}
+                    label={"Your name"}
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e => setName(e.target.value))}
+                  />
+                  <TextField
+                    required
+                    value={reviewInput}
+                    label={"Review message"}
+                    multiline
+                    rows={4}
+                    fullWidth
+                    variant="outlined"
+                    onChange={(e => setReviewInput(e.target.value))}
+                  />
+                  <div style={{ color: "red", marginTop: "10px" }}>{notify}</div>
+                  <Button onClick={addRev} variant="contained" style={{ margin: "15px", backgroundColor: "#3ee4bd", maxWidth: "200px" }}> Send review</Button>
+                </div>
+              }
+              {rev.map((r, key) => (
+                <Review key={key}>
+                  <span style={{ marginRight: "10px", fontWeight: "700" }}>{r.name}</span> <Rating ratingValue={r.rating / 5 * 100} size={18} iconsCount={5} readonly={true} />
+                  <div>
+                    {r.comment}
+                  </div>
+                  <small style={{ color: "gray" }}>{moment(r.createdAt).fromNow()}</small>
+                </Review>
+              ))}
+            </ReviewContainer>
+          </div>
         </InfoContainer>
       </Wrapper>
       <Newsletter />

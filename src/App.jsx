@@ -17,9 +17,22 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Announcement from "./components/Anouncement";
 import { useSelector } from "react-redux";
+import io from "socket.io-client"
+import { useEffect, useState } from "react";
+
 
 const App = () => {
   const user = useSelector(state => state.user.currentUser );
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    setSocket(io("http://localhost:5000"));
+  }, []);
+
+  useEffect(() => {
+    socket?.emit("shopVisit");
+  }, [socket]);
+
   return (
     <Router>
       <Announcement/>

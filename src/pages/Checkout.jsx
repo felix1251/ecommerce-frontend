@@ -11,7 +11,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { publicRequest } from "../requestMethods";
 import { useHistory } from "react-router-dom";
 import { clearCart } from "../redux/cartRedux";
-import io from "socket.io-client"
 
 const useStyles = makeStyles({
   root: {
@@ -141,11 +140,10 @@ const Button = styled.button`
   ${mobile({ width: "300px" })}
 `;
 
-const socket = io("http://localhost:5000")
-
-const Cart = () => {
+const Cart = ({socket}) => {
   const classes = useStyles();
   const cart = useSelector((state) => state.cart);
+  console.log(cart)
   const dispatch = useDispatch();
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
@@ -288,7 +286,7 @@ const Cart = () => {
                     <CancelOutlined />
                   </Delete>
                   <Badge badgeContent={product.quantity} color="primary">
-                    <Image src={product.img[0].imgURL} />
+                    <Image src={product.img[0]  } />
                   </Badge>
                   <ProductDetail>
                     <Details>

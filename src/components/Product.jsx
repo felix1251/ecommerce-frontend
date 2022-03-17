@@ -108,7 +108,7 @@ const Product = ({ item }) => {
           <Price>₱ {item.price}</Price>
         </PriceContainer>
       </CardInfo>
-      <Image src={item.img} />
+      <Image src={item.img[0]} />
       <Info>
         <Icon>
           <ShoppingCartOutlined />
